@@ -3,25 +3,80 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --foreground-rgb: rgba(0, 0, 0);
+  --background-start-rgb: rgba(214, 219, 220);
+  --background-end-rgb: rgba(255, 255, 255);
+  --linear-orange: rgba(238, 113, 113, 1);
+  --linear-yellow: rgba(246, 215, 148, 1);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --foreground-rgb: rgba(255, 255, 255);
+    --background-start-rgb: rgba(0, 0, 0);
+    --background-end-rgb: rgba(0, 0, 0);
+    --linear-orange: rgba(238, 113, 113, 1);
+    --linear-yellow: rgba(246, 215, 148, 1);
   }
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  color: var(--foreground-rgb);
+  background-color: #8bc6ec;
+  background-image: linear-gradient(135deg, #8bc6ec 0%, #9599e2 100%);
+}
+
+@layer components {
+  .login-card {
+    @apply backdrop-blur-xl border-sky-200 border-2 shadow-lg rounded-xl min-h-min md:col-start-2 w-4/5 sm:w-1/2 md:w-full text-center p-5;
+  }
+  .btn-login {
+    @apply rounded-lg bg-sky-500 py-4 mx-auto px-10 shadow-sm  shadow-sky-500 hover:shadow-sky-800 border-sky-300 border-2 transition-all ease-in-out duration-300 hover:bg-opacity-80 hover:border-sky-600 hover:text-sky-900 font-bold text-xl;
+  }
+}
+
+.labelBox {
+  position: relative;
+}
+
+.labelBox-text {
+  background: transparent;
+  border: rgb(186 230 253) solid 2px;
+  border-width: 2px;
+  backdrop-filter: blur(5px);
+  font-size: 1em;
+  padding: 1rem 0.75rem;
+  border-radius: 0.5em;
+  outline: none;
+  color: rgb(12 74 110);
+  width: 100%;
+  transition: 0.3s;
+}
+
+.labelBox-span {
+  font-weight: 500;
+  letter-spacing: 2px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 1rem 0.75rem;
+  color: rgb(2 132 199);
+  pointer-events: none;
+  transition: 0.3s;
+}
+
+.labelBox-text:focus,
+.labelBox-text:valid {
+  border-color: rgb(12 74 110);
+}
+
+.labelBox-text:focus ~ .labelBox-span,
+.labelBox-text:valid ~ .labelBox-span {
+  color: rgb(12 74 110);
+  transform: translateX(10px) translateY(-10px);
+  font-size: 0.8em;
+  padding: 0 0.75rem;
+  background-image: linear-gradient(135deg, #8bc6ec 0%, #9599e2 100%);
+  border-left: 1px solid rgb(12 74 110);
+  border-right: 1px solid rgb(12 74 110);
 }
