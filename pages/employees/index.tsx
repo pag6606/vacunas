@@ -13,7 +13,7 @@ interface EmployeesProps {
 function Employees(empleados: EmployeesProps) {
   const [peticion, setpeticion] = useState([]);
   const [grid, setgrid] = useState(false);
-  console.log(empleados.empleados);
+
   const [employees, setemployees] = useState(empleados.empleados);
 
   useEffect(() => {
@@ -53,11 +53,11 @@ function Employees(empleados: EmployeesProps) {
               className='text-3xl btnForm w-auto shadow-lg'
               onClick={() => setgrid(!grid)}
             >
-              {grid ? <BiListUl /> : <BiGridAlt />}
+              {!grid ? <BiListUl /> : <BiGridAlt />}
             </button>
           </div>
 
-          {grid ? (
+          {!grid ? (
             <div className='contentGrid'>
               {peticion.map((empleado: any) => (
                 <EmployeeCardComponent

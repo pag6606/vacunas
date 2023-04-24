@@ -8,6 +8,11 @@
   --background-end-rgb: rgba(255, 255, 255);
   --linear-orange: rgba(238, 113, 113, 1);
   --linear-yellow: rgba(246, 215, 148, 1);
+  --bubble1: #3b5999;
+  --bubble2: #e4405f;
+  --bubble3: #57c181;
+  --bubble4: #9599e2;
+  --bubble5: rgb(252 165 165);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -17,7 +22,16 @@
     --background-end-rgb: rgba(0, 0, 0);
     --linear-orange: rgba(238, 113, 113, 1);
     --linear-yellow: rgba(246, 215, 148, 1);
+    --bubble1: #3b5999;
+    --bubble2: #e4405f;
+    --bubble3: #57c181;
+    --bubble4: #9599e2;
+    --bubble5: rgb(252 165 165);
   }
+}
+
+html {
+  overflow-x: hidden;
 }
 
 html,
@@ -38,7 +52,7 @@ body {
   }
 
   .login-card {
-    @apply backdrop-blur-xl border-sky-200 border-2 shadow-lg rounded-xl min-h-min md:col-start-2 w-4/5 sm:w-1/2 md:w-full text-center p-5;
+    @apply backdrop-blur-md border-sky-200 border-2 shadow-lg rounded-xl min-h-min md:col-start-2 w-4/5 sm:w-1/2 md:w-full text-center p-5 col-span-1 z-20 top-1/4 left-0 right-0 bottom-0;
   }
   .btn-login {
     @apply rounded-lg bg-sky-500 py-4 mx-auto px-10 shadow-sm  shadow-sky-500 hover:shadow-sky-800 border-sky-300 border-2 transition-all ease-in-out duration-300 hover:bg-opacity-80 hover:border-sky-600 hover:text-sky-900 font-bold text-xl;
@@ -74,8 +88,7 @@ body {
   }
 
   .contentBx {
-    @apply md:w-full px-2 md:px-0  z-10 md:col-span-2
- lg:col-span-1 lg:col-start-2;
+    @apply md:w-full px-2 md:px-0  z-10 md:col-span-2 lg:col-span-1 lg:col-start-2;
   }
 
   .formBx {
@@ -87,9 +100,7 @@ body {
   }
 
   .contentList {
-    @apply w-full lg:w-9/12 m-auto flex flex-col gap-5 bg-slate-500/50 md:p-10 
-    items-center md:items-stretch shadow-xl rounded-lg
-     md:rounded-lg py-10 mb-24;
+    @apply w-full lg:w-9/12 m-auto flex flex-col gap-5 bg-slate-500/50 md:p-10 items-center md:items-stretch shadow-xl rounded-lg md:rounded-lg py-10 mb-24;
   }
 
   .list {
@@ -99,7 +110,7 @@ body {
   /* card */
 
   .contentGrid {
-    @apply grid w-full  md:grid-cols-2 lg:grid-cols-3 lg:w-9/12 gap-y-24 mt-10 mb-10 md:mb-24 m-auto p-5;
+    @apply grid w-full  md:grid-cols-2 lg:grid-cols-3 lg:w-9/12 gap-y-24 mt-6 mb-10 md:mb-24 m-auto p-5;
   }
 
   .card {
@@ -170,4 +181,48 @@ body {
   background-image: linear-gradient(135deg, #8bc6ec 0%, #9599e2 100%);
   border-left: 1px solid rgb(12 74 110);
   border-right: 1px solid rgb(12 74 110);
+}
+
+.loader {
+  position: relative;
+  width: 100%;
+  height: 18rem;
+}
+.loader span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.loader span::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 25px;
+  height: 25px;
+  background: transparent;
+  border: 4px solid var(--bubble5);
+  box-sizing: border-box;
+  border-radius: 50%;
+  box-shadow: 0 0 20px var(--bubble5), -30px -30px 0 var(--bubble2),
+    -30px -30px 20px var(--bubble2), 30px 30px 0 var(--bubble3),
+    30px 30px 20px var(--bubble3), 30px -30px 0 var(--bubble4),
+    30px -30px 20px var(--bubble4), -30px 30px 0 var(--bubble1),
+    -30px 30px 20px var(--bubble1);
+  animation: routacion 5s linear infinite;
+  transform-origin: 100px;
+}
+
+@keyframes routacion {
+  0% {
+    transform: rotate(0deg);
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    filter: hue-rotate(360deg);
+  }
 }

@@ -48,7 +48,7 @@ const EmployeeCardComponent = ({
               delete
             </button>
           </div>
-          <Link href={`/empleados/${id}`}>
+          <Link href={`/employees/${id}`}>
             <button className='mt-2 btnForm'>watch more</button>
           </Link>
         </div>

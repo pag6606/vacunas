@@ -17,34 +17,22 @@ const FormComponent = ({ empleado }: FormProps) => {
   const router = useRouter();
   const nuevoEmpleadoSchema = Yup.object().shape({
     email: Yup.string().email("invalid email").required("email is required"),
-    cedula: Yup.number()
+    dni: Yup.number()
       .integer("invalid number")
       .positive("invalid number")
       .typeError("invalid number")
-      .required("cedula is required"),
+      .required("dni is required"),
     name: Yup.string()
       .min(3, "name is too short")
       .trim("esta vacio")
       .required("name is required"),
-    lastname: Yup.string()
-      .min(3, "lastname is too short")
+    lastName: Yup.string()
+      .min(3, "lastName is too short")
       .trim("last name is empty")
-      .required("lastname is required"),
-    birthday: Yup.date(),
+      .required("lastName is required"),
   });
 
   const data = {};
-
-  //   const data = {
-  //     id: faker.datatype.uuid(),
-  //     img: faker.image.people(300, 300, true),
-  //     name: faker.name.firstName(),
-  //     lastname: faker.name.lastName(),
-  //     email: faker.internet.email(),
-  //     cedula: faker.random.numeric(10),
-  //     phone: faker.phone.phoneNumber(),
-  //     birthday: faker.date.birthdate(),
-  //   };
 
   const random = async (e: any) => {
     e.preventDefault();
@@ -65,47 +53,36 @@ const FormComponent = ({ empleado }: FormProps) => {
   };
 
   const submitForm = async (valores: any) => {
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/employees/create`;
+    console.log(url);
+
+    const createClient: any = {
+      firstName: valores.name,
+      lastName: valores.lastName,
+      dni: valores.dni,
+      email: valores.email,
+      role: "Employee",
+    };
+
     try {
-      if (empleado._id) {
-        //   editando
-        const url = `${process.env.NEXT_PUBLIC_API_URL}/api/empleados/${empleado._id}`;
-        await fetch(url, {
-          method: "PUT",
-          body: JSON.stringify({
-            ...valores,
-            // img: faker.image.people(300, 300, true),
-            vacuna: vacuna ? "Vacunado" : "No vacunado",
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        toast.success("Empleado editado");
-      } else {
-        //   nuevo
-        const url = `${process.env.NEXT_PUBLIC_API_URL}/api/empleados`;
-        await fetch(url, {
-          method: "POST",
-          body: JSON.stringify({
-            ...valores,
-            // img: faker.image.people(300, 300, true),
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        toast.success("Empleado creado");
-      }
-      router.push("/employees");
+      const created = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(createClient),
+      });
     } catch (error) {
       console.log(error);
     }
+    toast.success("Empleado creado");
+    router.push("/employees");
   };
 
   return (
     <section className={`sectionLogin`}>
       {/* <div className='bg-[url(/img/img1.jpg)] imgBx bg-cover bg-bottom'></div> */}
-      <div className={`contentBx ${empleado._id ? "h-full mt-10" : ""}`}>
+      <div className={`contentBx `}>
         <Formik
           validationSchema={nuevoEmpleadoSchema}
           onSubmit={async (values, { resetForm }) => {
@@ -114,40 +91,37 @@ const FormComponent = ({ empleado }: FormProps) => {
           }}
           initialValues={{
             email: empleado?.email ?? "",
-            cedula: empleado?.cedula ?? "",
+            dni: empleado?.dni ?? "",
             name: empleado?.name ?? "",
-            lastname: empleado?.lastname ?? "",
-            birthday: empleado?.birthday ?? "",
+            lastName: empleado?.lastName ?? "",
           }}
           enableReinitialize={true}
         >
           {({ errors, touched }) => (
             <Form className='formBx'>
               <div className='flex flex-col gap-4'>
-                <h2 className='heading'>
-                  {empleado.name ? "Editting employee" : "New employee"}
-                </h2>
+                <h2 className='heading'>New employee</h2>
 
                 <div>
                   <label
-                    className={`label ${errors.cedula ? "text-red-500" : null}`}
-                    htmlFor='cedula'
+                    className={`label ${errors.dni ? "text-red-500" : null}`}
+                    htmlFor='dni'
                   >
-                    Cedula
+                    Identification
                   </label>
                   <Field
                     className={`inputForm  ${
-                      errors.cedula
+                      errors.dni
                         ? "border-red-500 border-2 placeholder-white"
                         : null
                     }`}
-                    id='cedula'
-                    name='cedula'
+                    id='dni'
+                    name='dni'
                     type='text'
                     placeholder='1234567890'
                   />
-                  {errors.cedula && touched.cedula ? (
-                    <Alert>{errors.cedula}</Alert>
+                  {errors.dni && touched.dni ? (
+                    <Alert>{errors.dni}</Alert>
                   ) : null}
                 </div>
                 {/* nombre */}
@@ -177,25 +151,25 @@ const FormComponent = ({ empleado }: FormProps) => {
                 <div className=''>
                   <label
                     className={`label ${
-                      errors.lastname ? "text-red-500" : null
+                      errors.lastName ? "text-red-500" : null
                     }`}
-                    htmlFor='lastname'
+                    htmlFor='lastName'
                   >
-                    Lastname
+                    lastname
                   </label>
                   <Field
                     className={`inputForm ${
-                      errors.lastname
+                      errors.lastName
                         ? "border-red-500 border-2 placeholder-white"
                         : null
                     }`}
-                    id='lastname'
-                    name='lastname'
+                    id='lastName'
+                    name='lastName'
                     type='text'
                     placeholder='Segobia'
                   />
-                  {errors.lastname && touched.lastname ? (
-                    <Alert>{errors.lastname}</Alert>
+                  {errors.lastName && touched.lastName ? (
+                    <Alert>{errors.lastName}</Alert>
                   ) : null}
                 </div>
                 {/* correo */}
@@ -222,7 +196,7 @@ const FormComponent = ({ empleado }: FormProps) => {
                   ) : null}
                 </div>
                 {/* datos extr */}
-                {empleado._id && (
+                {/* {empleado._id && (
                   <>
                     <div className=''>
                       <label className={`label mr-5 mb-0`} htmlFor='birthday'>
@@ -253,9 +227,9 @@ const FormComponent = ({ empleado }: FormProps) => {
                       />
                     </div>
                   </>
-                )}
+                )} */}
                 {/* vacunas */}
-                {empleado._id && (
+                {/* {empleado._id && (
                   <div className=' flex items-center justify-center'>
                     <label className={`label mr-5 mb-0`} htmlFor='vacunado'>
                       Vacunado?
@@ -272,7 +246,7 @@ const FormComponent = ({ empleado }: FormProps) => {
                       placeholder='escribe tu email'
                     />
                   </div>
-                )}
+                )} */}
                 {/* birthday */}
                 {vacuna && (
                   <div className=''>
@@ -294,7 +268,7 @@ const FormComponent = ({ empleado }: FormProps) => {
                 <input
                   className='btnForm'
                   type='submit'
-                  value={empleado.name ? "update employee" : "new employee"}
+                  value={"new employee"}
                 />
               </div>
             </Form>
@@ -303,10 +277,6 @@ const FormComponent = ({ empleado }: FormProps) => {
       </div>
     </section>
   );
-};
-
-FormComponent.defaultProps = {
-  empleado: {},
 };
 
 export default FormComponent;

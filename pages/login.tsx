@@ -1,4 +1,5 @@
 import Alert from "@/components/Alert.component";
+import LoaderComponent from "@/components/Loader.component";
 import { Formik, Form, Field } from "formik";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
@@ -6,11 +7,7 @@ import React from "react";
 import { Fade } from "react-awesome-reveal";
 import * as Yup from "yup";
 
-interface LoginProps {
-  autorization: string;
-}
-const Login = (autorization: LoginProps) => {
-  console.log(autorization);
+const Login = () => {
   const router = useRouter();
   const loginSchema = Yup.object().shape({
     email: Yup.string().email("Invalid email").required("Required"),
@@ -19,22 +16,29 @@ const Login = (autorization: LoginProps) => {
 
   const submitForm = async (values: any) => {
     try {
-      const url = `https://51cd-200-24-153-246.sa.ngrok.io/vaccinationinventory/api/v1/users/login?username=${values.email}&password=${values.password}`;
-
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/login?username=${values.email}&password=${values.password}`;
+      console.log(url);
       const res = await fetch(url);
-      console.log(res);
       const user = await res.json();
-      console.log(user);
+
+      if (user.data.roles[0].name === "Administrator") {
+        console.log("es admin");
+        localStorage.setItem("ROLE", user.data.roles[0].name);
+        router.push("/employees");
+      } else {
+        localStorage.setItem("ROLE", user.data.roles[0].name);
+        router.push(`/employees/${user.data.id}`);
+      }
       // csolorzano6029@gmail.com&password=1312706029
-      console.log(values);
     } catch (error) {
       console.log(error);
     }
   };
 
   return (
-    <main className='w-full min-h-[100vh] grid md:grid-cols-3 items-center overflow-y-hidden '>
-      <Fade direction='up' className='login-card relative mx-auto'>
+    <main className='w-full min-h-[100vh] grid md:grid-cols-3 items-center overflow-hidden relative'>
+      <LoaderComponent />
+      <Fade direction='up' className='login-card absolute mx-auto'>
         <div className='flex flex-col gap-8'>
           <h1 className='text-xl font-bold uppercase'>login</h1>
           <Formik

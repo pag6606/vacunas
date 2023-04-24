@@ -13,9 +13,5 @@ export default function Home() {
     return;
   });
 
-  return (
-    <main className=''>
-      <h1>holaaaa</h1>
-    </main>
-  );
+  return <main className=''></main>;
 }
