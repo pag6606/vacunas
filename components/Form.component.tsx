@@ -32,29 +32,8 @@ const FormComponent = ({ empleado }: FormProps) => {
       .required("lastName is required"),
   });
 
-  const data = {};
-
-  const random = async (e: any) => {
-    e.preventDefault();
-    try {
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/api/empleados`;
-      await fetch(url, {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      toast.success("Empleado creado");
-      router.push("/empleados");
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const submitForm = async (valores: any) => {
     const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/employees/create`;
-    console.log(url);
 
     const createClient: any = {
       firstName: valores.name,
@@ -65,7 +44,7 @@ const FormComponent = ({ empleado }: FormProps) => {
     };
 
     try {
-      const created = await fetch(url, {
+      await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -81,7 +60,6 @@ const FormComponent = ({ empleado }: FormProps) => {
 
   return (
     <section className={`sectionLogin`}>
-      {/* <div className='bg-[url(/img/img1.jpg)] imgBx bg-cover bg-bottom'></div> */}
       <div className={`contentBx `}>
         <Formik
           validationSchema={nuevoEmpleadoSchema}

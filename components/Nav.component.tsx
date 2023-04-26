@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   BiMenu,
   BiPlusCircle,
@@ -12,19 +12,26 @@ import {
 import SearchComponent from "./Search.component";
 
 interface NavigationProps {
-  role: any;
+  role: string;
+  setEmployees: (employees: any) => void;
 }
 
-const NavigationComponent = ({ role }: NavigationProps) => {
+const NavigationComponent = ({ role, setEmployees }: NavigationProps) => {
   const [sideBar, setsideBar] = useState(false);
 
   const { asPath } = useRouter();
+  const router = useRouter();
 
   const [showsearch, setshowsearch] = useState(false);
 
+  function logOut() {
+    localStorage.removeItem("ROLE");
+    router.push("/");
+  }
+
   return (
     <>
-      <div className='w-full flex justify-end p-5 md:hidden'>
+      <div className='w-full flex justify-end p-5 absolute'>
         <nav
           className={`nav_small ${sideBar ? "bg-sky-600 text-slate-200" : ""}`}
           onClick={() => {
@@ -38,11 +45,7 @@ const NavigationComponent = ({ role }: NavigationProps) => {
 
       {role === "Administrator" ? (
         <>
-          <nav
-            className={`navbar ${
-              !sideBar && "-translate-x-16"
-            } md:translate-x-0`}
-          >
+          <nav className={`navbar ${!sideBar && "-translate-x-16"} `}>
             <Link
               href={"/employees/new"}
               className={`btnNavs group nuevo ${
@@ -78,38 +81,38 @@ const NavigationComponent = ({ role }: NavigationProps) => {
               </button>
             )}
             <button
+              onClick={() => logOut()}
               className={`btnNavs group empleados bg-red-600/40 text-slate-200 hover:bg-red-600/90 hover:text-slate-300`}
             >
               <BiLogOut size={40} />
               <span className='text-nav group-hover:scale-100'>log out</span>
             </button>
           </nav>
-          <SearchComponent showsearch={showsearch} />
+          <SearchComponent
+            showsearch={showsearch}
+            setEmployees={setEmployees}
+            setShowSearch={setshowsearch}
+          />
         </>
       ) : (
-        <>
-          <nav
-            className={`navbar ${
-              !sideBar && "-translate-x-16"
-            } md:translate-x-0`}
+        <nav className={`navbar ${!sideBar && "-translate-x-16"}`}>
+          <Link
+            href={"/employees"}
+            className={`btnNavs group empleados ${
+              asPath === "/employees" ? "bg-sky-600 text-slate-200" : ""
+            }`}
           >
-            <Link
-              href={"/employees"}
-              className={`btnNavs group empleados ${
-                asPath === "/employees" ? "bg-sky-600 text-slate-200" : ""
-              }`}
-            >
-              <BiUserCircle size={40} />
-              <span className='text-nav group-hover:scale-100'>employees</span>
-            </Link>
-            <button
-              className={`btnNavs group empleados bg-red-600/40 text-slate-200 hover:bg-red-600/90 hover:text-slate-300`}
-            >
-              <BiLogOut size={40} />
-              <span className='text-nav group-hover:scale-100'>log out</span>
-            </button>
-          </nav>
-        </>
+            <BiUserCircle size={40} />
+            <span className='text-nav group-hover:scale-100'>Profile</span>
+          </Link>
+          <button
+            onClick={() => logOut()}
+            className={`btnNavs group empleados bg-red-600/40 text-slate-200 hover:bg-red-600/90 hover:text-slate-300`}
+          >
+            <BiLogOut size={40} />
+            <span className='text-nav group-hover:scale-100'>log out</span>
+          </button>
+        </nav>
       )}
     </>
   );

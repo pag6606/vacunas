@@ -4,7 +4,7 @@ import LayoutComponent from "@/components/Layout.component";
 
 const Empleado = ({ entrada }: any) => {
   return (
-    <LayoutComponent page={"empleado"}>
+    <LayoutComponent page={"employee"}>
       <div className='w-full my-32 md:m-0 md:h-screen flex md:items-center justify-center m-auto'>
         <div className='cardEmpleado'>
           <div className=' h-full overflow-hidden'>
