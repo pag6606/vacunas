@@ -13,8 +13,6 @@ function SearchComponent({
   setShowSearch,
 }: SearchComponentProps) {
   const submitSearch = async (values: any) => {
-    console.log(values);
-
     const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/employees/filter`;
 
     const searchFilter: any = {

@@ -21,7 +21,7 @@ function EmployeeListComponent({
       <div>
         <div className='flex gap-2'>
           <button
-            onClick={() => router.push(`/employees/edit/${empleado?.id}`)}
+            onClick={() => router.push(`/employees/edit/${empleado?.dni}`)}
             className='flex items-center justify-evenly  btnForm bg-sky-600 hover:bg-sky-500'
           >
             <span className='lg:text-2xl'>
@@ -30,7 +30,7 @@ function EmployeeListComponent({
             edit
           </button>
           <button
-            onClick={() => eliminar(empleado?.id)}
+            onClick={() => eliminar(empleado)}
             className='flex items-center justify-evenly btnForm bg-red-700 hover:bg-red-600'
           >
             <span className='lg:text-2xl'>
@@ -39,7 +39,7 @@ function EmployeeListComponent({
             delete
           </button>
         </div>
-        <Link href={`/employees/${empleado?.id}`}>
+        <Link href={`/employees/${empleado?.dni}`}>
           <button className='mt-2 btnForm'>see more</button>
         </Link>
       </div>

@@ -1,7 +1,6 @@
 import Head from "next/head";
 import React from "react";
 import NavigationComponent from "./Nav.component";
-import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 
 const LayoutComponent: React.FC<any> = (props) => {
@@ -18,7 +17,12 @@ const LayoutComponent: React.FC<any> = (props) => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      <NavigationComponent role={role} />
+      <NavigationComponent
+        role={role}
+        setEmployees={() => {
+          return;
+        }}
+      />
       <div className='flex flex-col items-center justify-center min-h-max mx-auto px-6'>
         {props.children}
       </div>

@@ -7,25 +7,25 @@ const Empleado = ({ entrada }: any) => {
     <LayoutComponent page={"employee"}>
       <div className='w-full my-32 md:m-0 md:h-screen flex md:items-center justify-center m-auto'>
         <div className='cardEmpleado'>
-          <div className=' h-full overflow-hidden'>
+          <div className=' rounded-full'>
             <img
               className='w-full h-full object-cover'
               src={entrada.image}
-              alt={entrada.name}
+              alt={entrada.firstName}
             />
           </div>
           <div className='contenido md:mr-6'>
             <h2 className='mt-4 text-center md:text-left  text-xl'>
               <span className='heading hidden md:inline border-none md:mr-4 text-slate-200'>
-                nombre:
+                Name:
               </span>
-              {entrada.name}
+              {`${entrada.firstName} ${entrada.lastName}`}
             </h2>
             <p className='text-center mt-4 md:text-left text-xl'>
               <span className='heading hidden md:inline border-none md:mr-4 text-slate-200'>
-                correo:{" "}
+                Email:{" "}
               </span>
-              {entrada.origin.name}
+              {entrada.username}
             </p>
           </div>
         </div>
@@ -36,21 +36,40 @@ const Empleado = ({ entrada }: any) => {
 
 export async function getStaticPaths() {
   try {
-    const url = `https://rickandmortyapi.com/api/character`;
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/employees`;
     const respuesta = await fetch(url);
     const entradas = await respuesta.json();
-    const paths = entradas.results.map((entrada: any) => ({
-      params: { id: `${entrada.id}` },
+
+    const paths = entradas.data.map((entrada: any) => ({
+      params: {
+        id: entrada.dni.toString(),
+      },
     }));
 
-    return { paths, fallback: false };
-  } catch (error) {}
+    return {
+      paths,
+      fallback: false,
+    };
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-export const getStaticProps = async ({ params: { id } }: any) => {
-  const url = `https://rickandmortyapi.com/api/character/${id}`;
+export const getStaticProps = async ({ params }: any) => {
+  const { id } = params;
+
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/employees/myInformation?dni=${id}`;
   const respuesta = await fetch(url);
-  const entrada = await respuesta.json();
+  const employeeData = await respuesta.json();
+  const employeeInfo = { ...employeeData.data };
+  const urlRick = `https://rickandmortyapi.com/api/character/${employeeInfo.id}`;
+  const respuestaRick = await fetch(urlRick);
+  const datRick = await respuestaRick.json();
+  const entrada = {
+    ...employeeInfo,
+    image: datRick.image,
+  };
+
   return { props: { entrada } };
 };
 

@@ -3,6 +3,7 @@ import NavigationComponent from "@/components/Nav.component";
 import NoEmployees from "@/components/Noemployees.component";
 import { getEmployees } from "@/helper/helper";
 import { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 
 function Employees() {
   const [role, setrole] = useState("");
@@ -20,19 +21,22 @@ function Employees() {
     obtenerEmpleados();
   }, []);
 
-  const eliminar = (id: any) => {
-    const confirmar = confirm("¿deseas eliminar este empleado?");
+  const eliminar = (employee: any) => {
+    const confirmar = confirm(
+      `¿Would you like delete the employee: ${employee.firstName} ${employee.lastName}?`
+    );
     if (confirmar) {
       try {
         const eliminarEmpleado = async () => {
-          const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/employees/${id}`;
-          await fetch(url, { method: "DELETE" });
+          const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/employees/delete?dni=${employee.dni}&role=${role}`;
+          await fetch(url, { method: "PATCH" });
           const nuevosEmpleados = employees.filter(
-            (empleado: any) => empleado.id !== id
+            (empleado: any) => empleado.id !== employee.id
           );
-          // setpeticion(nuevosEmpleados);
+          setEmployees(nuevosEmpleados);
         };
         eliminarEmpleado();
+        toast.success("Employee deleted successfully");
       } catch (error) {
         console.log(error);
       }
@@ -41,6 +45,7 @@ function Employees() {
 
   return (
     <>
+      <ToastContainer />
       <NavigationComponent role={role} setEmployees={setEmployees} />
       <div className='flex flex-col items-center justify-center min-h-max mx-auto px-6'>
         {employees?.length > 0 ? (

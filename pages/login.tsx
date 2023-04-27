@@ -18,7 +18,7 @@ const Login = () => {
   const submitForm = async (values: any) => {
     try {
       const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/login?username=${values.email}&password=${values.password}`;
-      console.log(url);
+
       const res = await fetch(url);
       const user = await res.json();
 
@@ -27,7 +27,7 @@ const Login = () => {
         router.push("/employees");
       } else {
         localStorage.setItem("ROLE", user.data.roles[0].name);
-        router.push(`/employees/${user.data.id}`);
+        router.push(`/employees/${user.data.dni}`);
       }
       // csolorzano6029@gmail.com&password=1312706029
     } catch (error) {

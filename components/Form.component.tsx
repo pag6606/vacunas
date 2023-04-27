@@ -1,5 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-// import { faker } from "@faker-js/faker";
 import { Field, Form, Formik } from "formik";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
@@ -9,7 +7,7 @@ import { useState } from "react";
 import Alert from "./Alert.component";
 
 interface FormProps {
-  empleado: any;
+  empleado?: any;
 }
 
 const FormComponent = ({ empleado }: FormProps) => {
@@ -22,7 +20,7 @@ const FormComponent = ({ empleado }: FormProps) => {
       .positive("invalid number")
       .typeError("invalid number")
       .required("dni is required"),
-    name: Yup.string()
+    firstName: Yup.string()
       .min(3, "name is too short")
       .trim("esta vacio")
       .required("name is required"),
@@ -33,29 +31,55 @@ const FormComponent = ({ empleado }: FormProps) => {
   });
 
   const submitForm = async (valores: any) => {
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/employees/create`;
+    if (empleado.dni) {
+      console.log("holaaa");
+      console.log(valores);
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/employees/update?dni=${empleado.dni}&role=Administrator`;
+      const updateEmployee: any = {
+        firstName: valores.firstName,
+        lastName: valores.lastName,
+        dni: valores.dni,
+        email: valores.email,
+        role: "Employee",
+      };
+      try {
+        await fetch(url, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ ...updateEmployee }),
+        });
+        toast.success("Employee updated successfully");
+        router.push(`/employees/${empleado.dni}`);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/employees/create`;
 
-    const createClient: any = {
-      firstName: valores.name,
-      lastName: valores.lastName,
-      dni: valores.dni,
-      email: valores.email,
-      role: "Employee",
-    };
+      const createEmployee: any = {
+        firstName: valores.firstName,
+        lastName: valores.lastName,
+        dni: valores.dni,
+        email: valores.email,
+        role: "Employee",
+      };
 
-    try {
-      await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(createClient),
-      });
-    } catch (error) {
-      console.log(error);
+      try {
+        await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(createEmployee),
+        });
+        toast.success("Employee created successfully");
+        router.push("/employees");
+      } catch (error) {
+        console.log(error);
+      }
     }
-    toast.success("Empleado creado");
-    router.push("/employees");
   };
 
   return (
@@ -68,9 +92,9 @@ const FormComponent = ({ empleado }: FormProps) => {
             resetForm();
           }}
           initialValues={{
-            email: empleado?.email ?? "",
+            email: empleado?.username ?? "",
             dni: empleado?.dni ?? "",
-            name: empleado?.name ?? "",
+            firstName: empleado?.firstName ?? "",
             lastName: empleado?.lastName ?? "",
           }}
           enableReinitialize={true}
@@ -78,7 +102,9 @@ const FormComponent = ({ empleado }: FormProps) => {
           {({ errors, touched }) => (
             <Form className='formBx'>
               <div className='flex flex-col gap-4'>
-                <h2 className='heading'>New employee</h2>
+                <h2 className='heading'>
+                  {empleado.id ? "Edit Employee" : "New employee"}
+                </h2>
 
                 <div>
                   <label
@@ -105,24 +131,26 @@ const FormComponent = ({ empleado }: FormProps) => {
                 {/* nombre */}
                 <div className=''>
                   <label
-                    className={`label ${errors.name ? "text-red-500" : null}`}
+                    className={`label ${
+                      errors.firstName ? "text-red-500" : null
+                    }`}
                     htmlFor='name'
                   >
                     Name
                   </label>
                   <Field
                     className={`inputForm ${
-                      errors.name
+                      errors.firstName
                         ? "border-red-500 border-2 placeholder-white"
                         : null
                     }`}
-                    id='name'
-                    name='name'
+                    id='firstName'
+                    name='firstName'
                     type='text'
                     placeholder='Jose'
                   />
-                  {errors.name && touched.name ? (
-                    <Alert>{errors.name}</Alert>
+                  {errors.firstName && touched.firstName ? (
+                    <Alert>{errors.firstName}</Alert>
                   ) : null}
                 </div>
                 {/* apellido */}
@@ -246,7 +274,7 @@ const FormComponent = ({ empleado }: FormProps) => {
                 <input
                   className='btnForm'
                   type='submit'
-                  value={"new employee"}
+                  value={empleado.id ? "Edit Employee" : "New employee"}
                 />
               </div>
             </Form>
@@ -255,6 +283,10 @@ const FormComponent = ({ empleado }: FormProps) => {
       </div>
     </section>
   );
+};
+
+FormComponent.defaultProps = {
+  empleado: {},
 };
 
 export default FormComponent;
