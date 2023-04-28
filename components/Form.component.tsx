@@ -5,12 +5,14 @@ import { toast } from "react-toastify";
 import * as Yup from "yup";
 import { useState } from "react";
 import Alert from "./Alert.component";
+import "react-toastify/dist/ReactToastify.css";
 
 interface FormProps {
   empleado?: any;
 }
 
 const FormComponent = ({ empleado }: FormProps) => {
+  console.log(empleado);
   const [vacuna, setvacuna] = useState(false);
   const router = useRouter();
   const nuevoEmpleadoSchema = Yup.object().shape({
@@ -32,23 +34,24 @@ const FormComponent = ({ empleado }: FormProps) => {
 
   const submitForm = async (valores: any) => {
     if (empleado.dni) {
-      console.log("holaaa");
-      console.log(valores);
       const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/employees/update?dni=${empleado.dni}&role=Administrator`;
       const updateEmployee: any = {
         firstName: valores.firstName,
         lastName: valores.lastName,
         dni: valores.dni,
         email: valores.email,
-        role: "Employee",
+        mobilePhone: valores.mobilePhone,
+        birthDate: valores.birthDate,
+        vaccinationStatus: valores.vaccinationStatus,
       };
+      console.log(valores);
       try {
         await fetch(url, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ ...updateEmployee }),
+          body: JSON.stringify({ ...valores }),
         });
         toast.success("Employee updated successfully");
         router.push(`/employees/${empleado.dni}`);
@@ -57,7 +60,6 @@ const FormComponent = ({ empleado }: FormProps) => {
       }
     } else {
       const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/employees/create`;
-
       const createEmployee: any = {
         firstName: valores.firstName,
         lastName: valores.lastName,
@@ -96,13 +98,23 @@ const FormComponent = ({ empleado }: FormProps) => {
             dni: empleado?.dni ?? "",
             firstName: empleado?.firstName ?? "",
             lastName: empleado?.lastName ?? "",
+            mobilePhone: empleado?.mobilePhone ?? "",
+            birthDate: empleado?.birthDate ?? "1997-10-20",
+            homeAddress: empleado?.homeAddress ?? "",
+            vaccinationStatus: empleado?.vaccinationStatus ?? false,
           }}
           enableReinitialize={true}
         >
-          {({ errors, touched }) => (
+          {({ errors, touched, values }) => (
             <Form className='formBx'>
-              <div className='flex flex-col gap-4'>
-                <h2 className='heading'>
+              <div
+                className={`gap-4 ${
+                  empleado.id
+                    ? "grid grid-cols-1 md:grid-cols-2"
+                    : "flex flex-col"
+                }`}
+              >
+                <h2 className={`heading ${empleado.id ? "md:col-span-2" : ""}`}>
                   {empleado.id ? "Edit Employee" : "New employee"}
                 </h2>
 
@@ -129,7 +141,7 @@ const FormComponent = ({ empleado }: FormProps) => {
                   ) : null}
                 </div>
                 {/* nombre */}
-                <div className=''>
+                <div>
                   <label
                     className={`label ${
                       errors.firstName ? "text-red-500" : null
@@ -154,7 +166,7 @@ const FormComponent = ({ empleado }: FormProps) => {
                   ) : null}
                 </div>
                 {/* apellido */}
-                <div className=''>
+                <div>
                   <label
                     className={`label ${
                       errors.lastName ? "text-red-500" : null
@@ -202,38 +214,62 @@ const FormComponent = ({ empleado }: FormProps) => {
                   ) : null}
                 </div>
                 {/* datos extr */}
-                {/* {empleado._id && (
+                {empleado.id && (
                   <>
-                    <div className=''>
-                      <label className={`label mr-5 mb-0`} htmlFor='birthday'>
-                        Fecha de nacimiento
+                    <div>
+                      <label className={`label mr-5 mb-0`} htmlFor='birthDate'>
+                        Birthdate
                       </label>
                       <Field
                         className={`inputForm `}
-                        id='birthday'
-                        name='birthday'
+                        id='birthDate'
+                        name='birthDate'
                         type='date'
                         min='2021-31-01'
                         max='2022-30-06'
-                        value={empleado?.birthday}
+                        value={empleado?.birthDate}
                         placeholder='escribe tu email'
                       />
                     </div>
 
-                    <div className=''>
-                      <label className={`label`} htmlFor='telefono'>
-                        telefono
+                    <div>
+                      <label className={`label`} htmlFor='mobilePhone'>
+                        Phone
                       </label>
                       <Field
                         className={`inputForm`}
-                        id='telefono'
-                        name='telefono'
+                        id='mobilePhone'
+                        name='mobilePhone'
                         type='text'
                         placeholder='1234567890'
                       />
                     </div>
+
+                    <div>
+                      <label className={`label`} htmlFor='homeAddress'>
+                        Address
+                      </label>
+                      <Field
+                        className={`inputForm`}
+                        id='homeAddress'
+                        name='homeAddress'
+                        type='text'
+                        placeholder='Garcia Moreno,Quito, Ecuador'
+                      />
+                    </div>
+
+                    <div className='flex items-center justify-center mx-auto gap-5 border-2 rounded-xl w-full border-sky-800 mt-7'>
+                      <label className={`label`} htmlFor='vaccinationStatus'>
+                        Has Vaccination
+                      </label>
+                      <Field
+                        type='checkbox'
+                        id='vaccinationStatus'
+                        name='vaccinationStatus'
+                      />
+                    </div>
                   </>
-                )} */}
+                )}
                 {/* vacunas */}
                 {/* {empleado._id && (
                   <div className=' flex items-center justify-center'>
@@ -272,7 +308,7 @@ const FormComponent = ({ empleado }: FormProps) => {
                   </div>
                 )}
                 <input
-                  className='btnForm'
+                  className={`btnForm ${empleado.id ? "md:col-span-2" : ""}`}
                   type='submit'
                   value={empleado.id ? "Edit Employee" : "New employee"}
                 />

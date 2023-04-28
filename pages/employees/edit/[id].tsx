@@ -5,31 +5,8 @@ import LayoutComponent from "@/components/Layout.component";
 
 const Empleado = ({ entrada }: any) => {
   return (
-    <LayoutComponent page={"employee"}>
+    <LayoutComponent page={"employee"} dni={entrada.dni}>
       <div className='w-full my-32 md:m-0  flex md:items-center justify-center m-auto'>
-        {/* <div className=''>
-          <div className='overflow-hidden rounded-full'>
-            <img
-              className='w-full h-full object-cover'
-              src={entrada.image}
-              alt={entrada.firstName}
-            />
-          </div>
-          <div className='contenido md:mr-6'>
-            <h2 className='mt-4 text-center md:text-left  text-xl'>
-              <span className='heading hidden md:inline border-none md:mr-4 text-slate-200'>
-                First Name:
-              </span>
-              {`${entrada.firstName} ${entrada.lastName}`}
-            </h2>
-            <p className='text-center mt-4 md:text-left text-xl'>
-              <span className='heading hidden md:inline border-none md:mr-4 text-slate-200'>
-                email:{" "}
-              </span>
-              {entrada.username}
-            </p>
-          </div>
-        </div> */}
         <FormComponent empleado={entrada} />
       </div>
     </LayoutComponent>

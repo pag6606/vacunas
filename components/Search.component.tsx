@@ -1,7 +1,6 @@
 import { Field, Form, Formik } from "formik";
 import { BiX } from "react-icons/bi";
 
-import * as Yup from "yup";
 interface SearchComponentProps {
   showsearch: boolean;
   setEmployees: (employees: any) => void;

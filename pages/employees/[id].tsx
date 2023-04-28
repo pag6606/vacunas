@@ -1,15 +1,28 @@
 /* eslint-disable @next/next/no-img-element */
 
 import LayoutComponent from "@/components/Layout.component";
+import { useRouter } from "next/router";
+import { BiEdit } from "react-icons/bi";
 
 const Empleado = ({ entrada }: any) => {
+  const router = useRouter();
+  console.log(entrada);
   return (
-    <LayoutComponent page={"employee"}>
-      <div className='w-full my-32 md:m-0 md:h-screen flex md:items-center justify-center m-auto'>
-        <div className='cardEmpleado'>
-          <div className=' rounded-full'>
+    <LayoutComponent page={"employee"} openNav={true} dni={entrada.dni}>
+      <div className='w-full my-32 md:m-0 md:h-screen flex md:items-center justify-center m-auto relative'>
+        <button
+          onClick={() => router.push(`/employees/edit/${entrada?.dni}`)}
+          className='absolute flex items-center justify-evenly bg-sky-600 hover:bg-sky-500'
+        >
+          <span className='lg:text-2xl'>
+            <BiEdit />
+          </span>
+          edit
+        </button>
+        <div className='border-2 border-slate-700 flex gap-5'>
+          <div className='border-2'>
             <img
-              className='w-full h-full object-cover'
+              className=' object-cover rounded-full h-32 w-32'
               src={entrada.image}
               alt={entrada.firstName}
             />

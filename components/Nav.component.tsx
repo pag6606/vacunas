@@ -14,9 +14,14 @@ import SearchComponent from "./Search.component";
 interface NavigationProps {
   role: string;
   setEmployees: (employees: any) => void;
+  openNav?: boolean;
 }
 
-const NavigationComponent = ({ role, setEmployees }: NavigationProps) => {
+const NavigationComponent = ({
+  role,
+  setEmployees,
+  openNav,
+}: NavigationProps) => {
   const [sideBar, setsideBar] = useState(false);
 
   const { asPath } = useRouter();
@@ -96,15 +101,6 @@ const NavigationComponent = ({ role, setEmployees }: NavigationProps) => {
         </>
       ) : (
         <nav className={`navbar ${!sideBar && "-translate-x-16"}`}>
-          <Link
-            href={"/employees"}
-            className={`btnNavs group empleados ${
-              asPath === "/employees" ? "bg-sky-600 text-slate-200" : ""
-            }`}
-          >
-            <BiUserCircle size={40} />
-            <span className='text-nav group-hover:scale-100'>Profile</span>
-          </Link>
           <button
             onClick={() => logOut()}
             className={`btnNavs group empleados bg-red-600/40 text-slate-200 hover:bg-red-600/90 hover:text-slate-300`}
