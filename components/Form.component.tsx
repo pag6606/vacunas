@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 
 import * as Yup from "yup";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Alert from "./Alert.component";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -13,6 +13,7 @@ interface FormProps {
 
 const FormComponent = ({ empleado }: FormProps) => {
   console.log(empleado);
+  const [vaccines, setVaccines] = useState<any>([]);
   const [vacuna, setvacuna] = useState(false);
   const router = useRouter();
   const nuevoEmpleadoSchema = Yup.object().shape({
@@ -32,20 +33,40 @@ const FormComponent = ({ empleado }: FormProps) => {
       .required("lastName is required"),
   });
 
+  const initialValuesForm = {
+    email: empleado?.username ?? "",
+    dni: empleado?.dni ?? "",
+    firstName: empleado?.firstName ?? "",
+    lastName: empleado?.lastName ?? "",
+    mobilePhone: empleado?.mobilePhone ?? "",
+    birthDate: empleado?.birthDate ?? "1997-10-20",
+    homeAddress: empleado?.homeAddress ?? "",
+    vaccinationStatus: empleado?.vaccinationStatus ?? false,
+    vaccineId: "",
+    doseNumber: empleado?.doseNumber ?? 1,
+    vaccinationDate: "",
+  };
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/vaccines`)
+      .then((response) => response.json())
+      .then((data) => setVaccines(data))
+      .catch((error) => console.error(error));
+  }, []);
+
   const submitForm = async (valores: any) => {
     if (empleado.dni) {
       const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/employees/update?dni=${empleado.dni}&role=Administrator`;
-      const updateEmployee: any = {
-        firstName: valores.firstName,
-        lastName: valores.lastName,
-        dni: valores.dni,
-        email: valores.email,
-        mobilePhone: valores.mobilePhone,
-        birthDate: valores.birthDate,
-        vaccinationStatus: valores.vaccinationStatus,
-      };
-      console.log(valores);
+      const vaccineUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/employeeVaccinations/create`;
+
       try {
+        const createVaccine = {
+          vaccineId: +valores.vaccineId,
+          employeeId: empleado.id,
+          doseNumber: valores.doseNumber,
+          vaccinationDate: valores.vaccinationDate,
+        };
+
         await fetch(url, {
           method: "PATCH",
           headers: {
@@ -53,6 +74,28 @@ const FormComponent = ({ empleado }: FormProps) => {
           },
           body: JSON.stringify({ ...valores }),
         });
+
+        if (empleado.vaccines.length === 0) {
+          await fetch(vaccineUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ ...createVaccine }),
+          });
+        } else {
+          const vaccineUrlUpdate = `${
+            process.env.NEXT_PUBLIC_API_URL
+          }/api/v1/employeeVaccinations/update?employeeVaccinationId=${+valores.vaccineId}`;
+
+          await fetch(vaccineUrlUpdate, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ ...createVaccine }),
+          });
+        }
         toast.success("Employee updated successfully");
         router.push(`/employees/${empleado.dni}`);
       } catch (error) {
@@ -93,16 +136,7 @@ const FormComponent = ({ empleado }: FormProps) => {
             await submitForm(values);
             resetForm();
           }}
-          initialValues={{
-            email: empleado?.username ?? "",
-            dni: empleado?.dni ?? "",
-            firstName: empleado?.firstName ?? "",
-            lastName: empleado?.lastName ?? "",
-            mobilePhone: empleado?.mobilePhone ?? "",
-            birthDate: empleado?.birthDate ?? "1997-10-20",
-            homeAddress: empleado?.homeAddress ?? "",
-            vaccinationStatus: empleado?.vaccinationStatus ?? false,
-          }}
+          initialValues={initialValuesForm}
           enableReinitialize={true}
         >
           {({ errors, touched, values }) => (
@@ -225,8 +259,8 @@ const FormComponent = ({ empleado }: FormProps) => {
                         id='birthDate'
                         name='birthDate'
                         type='date'
-                        min='2021-31-01'
-                        max='2022-30-06'
+                        min='1940-01-01'
+                        max='2005-12-01'
                         value={empleado?.birthDate}
                         placeholder='escribe tu email'
                       />
@@ -266,47 +300,61 @@ const FormComponent = ({ empleado }: FormProps) => {
                         type='checkbox'
                         id='vaccinationStatus'
                         name='vaccinationStatus'
+                        defaultChecked={vacuna}
+                      />
+                    </div>
+
+                    <div>
+                      <label className={`label`} htmlFor='homeAddress'>
+                        Vaccine
+                      </label>
+
+                      <Field
+                        className={`inputForm`}
+                        name='vaccineId'
+                        as='select'
+                      >
+                        <option value=''>Select an option</option>
+                        {vaccines?.data?.map((option: any) => (
+                          <option key={option.vaccineType} value={option.id}>
+                            {option.vaccineType}
+                          </option>
+                        ))}
+                      </Field>
+                    </div>
+
+                    <div>
+                      <label className={`label`} htmlFor='homeAddress'>
+                        Doses applied
+                      </label>
+
+                      <Field
+                        className={`inputForm`}
+                        name='doseNumber'
+                        type='number'
+                        defaultValue={empleado?.doseNumber}
+                        min='1'
+                        max='4'
+                      />
+                    </div>
+                    <div className='md:col-span-2'>
+                      <label
+                        className={`label mr-5 mb-0`}
+                        htmlFor='vaccinationDate'
+                      >
+                        Date of application
+                      </label>
+                      <Field
+                        className={`inputForm `}
+                        id='vaccinationDate'
+                        name='vaccinationDate'
+                        type='date'
+                        value={empleado?.vaccinationDate}
                       />
                     </div>
                   </>
                 )}
-                {/* vacunas */}
-                {/* {empleado._id && (
-                  <div className=' flex items-center justify-center'>
-                    <label className={`label mr-5 mb-0`} htmlFor='vacunado'>
-                      Vacunado?
-                    </label>
-                    <Field
-                      onClick={() => setvacuna(!vacuna)}
-                      className={`inputForm w-auto btnForm ${
-                        vacuna ? "Vacunado" : "bg-red-500 hover:bg-red-500"
-                      }`}
-                      id='vacunado'
-                      name='vacunado'
-                      type='button'
-                      value={`${vacuna ? "Vacunado" : "No vacunado"}`}
-                      placeholder='escribe tu email'
-                    />
-                  </div>
-                )} */}
-                {/* birthday */}
-                {vacuna && (
-                  <div className=''>
-                    <label className={`label mr-5 mb-0`} htmlFor='fechaVac'>
-                      Fecha de vacunacion
-                    </label>
-                    <Field
-                      className={`inputForm `}
-                      id='fechaVac'
-                      name='fechaVac'
-                      type='date'
-                      min='2021-31-01'
-                      max='2022-30-06'
-                      value={empleado?.birthdate}
-                      placeholder='escribe tu email'
-                    />
-                  </div>
-                )}
+
                 <input
                   className={`btnForm ${empleado.id ? "md:col-span-2" : ""}`}
                   type='submit'
